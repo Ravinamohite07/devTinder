@@ -1,32 +1,38 @@
 const express = require("express");
-
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-app.use("/user",(req,res) =>{
-    res.send("handled all the methods...!")
-})
-
-//This wil only handle GET call to /user
-app.get("/user",(req,res) =>{
-    res.send({firstname:"ravina",lastName:"Mohite"})
-})
-
-app.post("/user",(req,res)=>{
-    console.log("saved the data in the database");
-    res.send("data saved successfully in the database")
-})
-
-app.delete("/user",(req,res) =>{
-    res.send("data delated successfully...!");
-})
-
-//This will match the http method api call
-app.use("/test", (req,res) =>{
-    res.send("hello from the server...!")
-
-})
-
-
-app.listen(3000, () =>{
-    console.log("Server is suucessfully listening on port 3000")
+app.post("/signup",async (req,res) =>{
+   //creating a new instance of the user model
+const user = new User({
+    firstName: "vina",
+    lastName: "Mohite",
+    emailId: "ravia@gmail.com",
+    password: "vina"
 });
+
+try{
+  await user.save();
+  res.send("user added successfully..!")
+}catch(err){
+  res.status(500).send("error saving the user:" +err.message);
+}
+
+});
+
+
+
+
+connectDB()
+  .then( () =>{
+    console.log("database connection established...!");
+    app.listen(3000, () =>{
+        console.log("Server is suucessfully listening on port 3000");
+    });
+   }).catch( err =>{
+    console.error("database connection cannot be established...!");
+   })
+
+
+
